@@ -38,6 +38,55 @@ function note(audio, frequency) {
     };
 };
 
+function createTrack(color, playSound) {
+    var steps =[];
+    for(let i = 0; i < 16; i++) {
+        steps.push(false)
+    }
+
+    return { steps: steps, color: color, playSound: playSound }
+};
+
+let BUTTON_SIZE = 26
+function buttonPosition(column, row) {
+    return {
+        x: BUTTON_SIZE / 2 + column * BUTTON_SIZE * 1.5,
+        y: BUTTON_SIZE / 2 + row * BUTTON_SIZE * 1.5,
+    };
+};
+
+function drawButton(screen, column, row, color) {
+    let position = buttonPosition(column, row);
+    screen.fillStyle = color;
+    screen.fillRect(position.x, 
+                    position.y, 
+                    BUTTON_SIZE, 
+                    BUTTON_SIZE)
+};
+
+function drawTracks(screen, data) {
+    data.tracks.forEach(function(track, row) {
+        track.steps.forEach(function(on, column){
+            drawButton(screen, 
+                    column, 
+                    row, 
+                    on ? track.color : 'lightgray')
+        });
+    });
+};
+
+let data = { 
+    step: 0, 
+    tracks: [createTrack("gold", note(audio, 440))]
+};
+
+let screen = document.getElementById("screen").getContext('2d');
+
+// draw function which is esentially a loop. this will ensure it keeps drawing.
+(function draw() {
+    drawTracks(screen, data)
+    requestAnimationFrame(draw)
+})();
 // 440 is the frequency. the number controls the pitch.
 
 note(audio, 440)()
